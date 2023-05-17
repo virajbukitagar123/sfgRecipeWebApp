@@ -2,6 +2,7 @@ package guru.springframework.sfgrecipewebapp.domain;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -16,15 +17,17 @@ public class Recipe {
     private Integer servings;
     private String source;
     private String url;
+    @Lob
     private String directions;
     @Enumerated(value = EnumType.STRING)
     private Difficulty difficulty;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe")
-    private Set<Ingredient> ingredients;
+    private Set<Ingredient> ingredients = new HashSet<>();
 
     @Lob
     private Byte[] image;
+
     @OneToOne(cascade = CascadeType.ALL)
     private Notes notes;
 
@@ -33,7 +36,7 @@ public class Recipe {
             name = "recipe_category",
             joinColumns = @JoinColumn(name = "recipe_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private Set<Category> categories;
+    private Set<Category> categories = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -137,5 +140,9 @@ public class Recipe {
 
     public void setCategories(Set<Category> categories) {
         this.categories = categories;
+    }
+
+    public void addIngredient(Ingredient ingredient){
+        ingredients.add(ingredient);
     }
 }
