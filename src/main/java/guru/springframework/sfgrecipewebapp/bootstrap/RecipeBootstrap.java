@@ -4,11 +4,11 @@ import guru.springframework.sfgrecipewebapp.domain.*;
 import guru.springframework.sfgrecipewebapp.repositories.CategoryRepository;
 import guru.springframework.sfgrecipewebapp.repositories.RecipeRepository;
 import guru.springframework.sfgrecipewebapp.repositories.UnitOfMeasureRepository;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
