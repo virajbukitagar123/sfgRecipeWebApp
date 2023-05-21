@@ -1,10 +1,10 @@
 package guru.springframework.sfgrecipewebapp.controllers;
 
+import guru.springframework.sfgrecipewebapp.commands.RecipeCommand;
 import guru.springframework.sfgrecipewebapp.services.RecipeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class RecipeController {
@@ -19,6 +19,18 @@ public class RecipeController {
     public String showById(@PathVariable String id, Model model){
 
         model.addAttribute("recipe", recipeService.findById(Long.valueOf(id)));
-        return "recipe/index";
+        return "recipe/show";
+    }
+
+    @RequestMapping("recipe/new")
+    public String newRecipe(Model model){
+        model.addAttribute("recipe", new RecipeCommand());
+        return "recipe/recipeform";
+    }
+
+    @PostMapping("recipe/")
+    public String saveOrUpdate(@ModelAttribute RecipeCommand command) {
+        RecipeCommand savedCommand = recipeService.saveRecipe(command);
+        return "redirect:/recipe/show/" + savedCommand.getId();
     }
 }
