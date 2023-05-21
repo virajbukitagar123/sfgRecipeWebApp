@@ -3,7 +3,11 @@ package guru.springframework.sfgrecipewebapp.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @EqualsAndHashCode(exclude = {"recipe"})
 @Entity
 public class Notes {

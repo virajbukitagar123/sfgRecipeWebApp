@@ -5,6 +5,7 @@ import guru.springframework.sfgrecipewebapp.services.RecipeService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,6 +29,9 @@ class IndexControllerTest {
     @InjectMocks
     IndexController indexController;
 
+    @Captor
+    ArgumentCaptor<Set<Recipe>> argumentCaptor;
+
     @Test
     void getIndexPage() {
         // given
@@ -38,7 +42,6 @@ class IndexControllerTest {
         when(recipeService.getRecipes())
                 .thenReturn(recipeSet);
 
-        ArgumentCaptor<Set<Recipe>> argumentCaptor = ArgumentCaptor.forClass(Set.class);
 
         String indexPage = indexController.getIndexPage(model);
 
