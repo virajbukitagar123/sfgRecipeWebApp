@@ -56,6 +56,33 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     @Transactional
+    public void deleteIngredient(Long recipeId, Long ingredientId) {
+        Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
+
+        if(recipeOptional.isEmpty()){
+            log.error("Recipe Id not found Id: " + recipeId);
+            return;
+        }
+
+        Recipe recipe = recipeOptional.get();
+        Set<Ingredient> ingredients = recipe.getIngredients();
+        Optional<Ingredient> ingredientOptional = ingredients.stream()
+                .filter(ingredient -> ingredient.getId().equals(ingredientId))
+                .findFirst();
+
+        if(ingredientOptional.isEmpty()) {
+            log.error("Ingredient Id not found Id: " + ingredientId);
+            return;
+        }
+
+        Ingredient ingredientToDelete = ingredientOptional.get();
+        ingredientToDelete.setRecipe(null);
+        recipe.getIngredients().remove(ingredientToDelete);
+        recipeRepository.save(recipe);
+    }
+
+    @Override
+    @Transactional
     public IngredientCommand saveIngredient(IngredientCommand ingredientCommand) {
         Long recipeId = ingredientCommand.getRecipeId();
 
@@ -79,15 +106,26 @@ public class IngredientServiceImpl implements IngredientService {
                 ingredient.setAmount(ingredientCommand.getAmount());
                  // recipe.addIngredient(ingredient);
              } else {
-                recipe.addIngredient(ingredientCommandToIngredient.convert(ingredientCommand));
+                Ingredient ingredient = ingredientCommandToIngredient.convert(ingredientCommand);
+                ingredient.setRecipe(recipe);
+                recipe.addIngredient(ingredient);
              }
 
             Recipe savedRecipe = recipeRepository.save(recipe);
 
-            return ingredientToIngredientCommand.convert(savedRecipe.getIngredients().stream()
+            Optional<Ingredient> saveIngredientOptional = savedRecipe.getIngredients().stream()
                     .filter(recipeIngredients -> recipeIngredients.getId().equals(ingredientCommand.getId()))
-                    .findFirst()
-                    .get());
+                    .findFirst();
+
+            if(saveIngredientOptional.isEmpty()) {
+                saveIngredientOptional = savedRecipe.getIngredients().stream()
+                        .filter(recipeIngredients -> recipeIngredients.getDescription().equals(ingredientCommand.getDescription()))
+                        .filter(recipeIngredients -> recipeIngredients.getAmount().equals(ingredientCommand.getAmount()))
+                        .filter(recipeIngredients -> recipeIngredients.getUnitOfMeasure().getId().equals(ingredientCommand.getUnitOfMeasure().getId()))
+                        .findFirst();
+            }
+
+            return ingredientToIngredientCommand.convert(saveIngredientOptional.get());
         }
     }
 }

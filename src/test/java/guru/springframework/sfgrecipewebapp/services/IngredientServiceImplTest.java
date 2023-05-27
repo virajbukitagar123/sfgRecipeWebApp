@@ -83,7 +83,7 @@ class IngredientServiceImplTest {
     }
 
     @Test
-    public void testSaveRecipeCommand() throws Exception {
+    void testSaveRecipeCommand() throws Exception {
         // given
         IngredientCommand command = new IngredientCommand();
         command.setId(1L);
@@ -105,6 +105,32 @@ class IngredientServiceImplTest {
         // then
         assertThat(savedCommand.getId())
                 .isEqualTo(1L);
+
+        verify(recipeRepository)
+                .findById(anyLong());
+        verify(recipeRepository)
+                .save(any(Recipe.class));
+    }
+
+    @Test
+    void deleteIngredient() throws Exception {
+        // given
+        Recipe recipe = new Recipe();
+        recipe.setId(1L);
+        Ingredient ingredient = new Ingredient();
+        ingredient.setId(2L);
+        ingredient.setRecipe(recipe);
+        Ingredient ingredient1 = new Ingredient();
+        ingredient1.setId(3L);
+        ingredient1.setRecipe(recipe);
+        recipe.addIngredient(ingredient1);
+        recipe.addIngredient(ingredient);
+
+        when(recipeRepository.findById(anyLong()))
+                .thenReturn(Optional.of(recipe));
+
+        // when
+        ingredientService.deleteIngredient(1L, 2L);
 
         verify(recipeRepository)
                 .findById(anyLong());
