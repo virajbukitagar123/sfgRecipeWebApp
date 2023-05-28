@@ -1,5 +1,8 @@
 package guru.springframework.sfgrecipewebapp.services;
 
+import guru.springframework.sfgrecipewebapp.commands.RecipeCommand;
+import guru.springframework.sfgrecipewebapp.convertors.RecipeCommandToRecipe;
+import guru.springframework.sfgrecipewebapp.convertors.RecipeToRecipeCommand;
 import guru.springframework.sfgrecipewebapp.domain.Recipe;
 import guru.springframework.sfgrecipewebapp.repositories.RecipeRepository;
 import org.junit.jupiter.api.Test;
@@ -21,6 +24,12 @@ class RecipeServiceImplTest {
     @Mock
     RecipeRepository recipeRepository;
 
+    @Mock
+    RecipeToRecipeCommand recipeToRecipeCommand;
+
+    @Mock
+    RecipeCommandToRecipe recipeCommandToRecipe;
+
     @InjectMocks
     RecipeServiceImpl recipeService;
 
@@ -41,6 +50,29 @@ class RecipeServiceImplTest {
         assertThat(recipes)
                 .hasSize(1);
         verify(recipeRepository, times(1))
+                .findAll();
+    }
+
+    @Test
+    void getRecipeCommandByIdTest() {
+        Recipe recipe = new Recipe();
+        recipe.setId(1L);
+        Optional<Recipe> recipeOptional = Optional.of(recipe);
+
+        when(recipeRepository.findById(anyLong())).thenReturn(recipeOptional);
+
+        RecipeCommand recipeCommand = new RecipeCommand();
+        recipeCommand.setId(1L);
+
+        when(recipeToRecipeCommand.convert(any())).thenReturn(recipeCommand);
+
+        RecipeCommand commandById = recipeService.findCommandById(1L);
+
+        assertThat(commandById)
+                .isNotNull();
+        verify(recipeRepository)
+                .findById(anyLong());
+        verify(recipeRepository, never())
                 .findAll();
     }
 
