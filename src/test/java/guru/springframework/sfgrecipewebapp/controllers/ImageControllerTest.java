@@ -97,4 +97,11 @@ public class ImageControllerTest {
         assertThat(responseBytes.length)
                 .isEqualTo(s.getBytes().length);
     }
+
+    @Test
+    void testGetImageIdAsString() throws Exception {
+        mockMvc.perform(get("/recipe/asdf/recipeimage"))
+                .andExpect(status().isBadRequest())
+                .andExpect(view().name("400error"));
+    }
 }
